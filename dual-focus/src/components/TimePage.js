@@ -12,6 +12,7 @@ const TimePage = () => {
 
   return (
     <div>
+      <h1>Hello World</h1>
       <p>{currentTime.toLocaleTimeString()}</p>
       <p>{currentTime.toLocaleDateString()}</p>
     </div>
