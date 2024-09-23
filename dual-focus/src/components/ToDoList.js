@@ -26,7 +26,7 @@ const ToDoList = () => {
   };
 
   const toggleTaskCompletion = (index) => {
-    const newTask = tasks.filter((_, i) => i != index);
+    const newTask = tasks.filter((_, i) => i !== index);
     setTasks(newTask);
   };
 

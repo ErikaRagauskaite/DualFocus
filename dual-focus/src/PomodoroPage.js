@@ -1,10 +1,10 @@
 import React from "react";
-import PomodoroTimer from "../components/PomodoroTimer";
+import PomodoroTimer from "./components/PomodoroTimer";
 
 const PomodoroPage = () => {
   return (
     <>
-      <PomodoroPage />
+      <PomodoroTimer />
     </>
   );
 };

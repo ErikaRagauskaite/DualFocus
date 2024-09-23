@@ -1,10 +1,10 @@
-import React from "react";
-import { FaBook, FaStackOverflow, FaReact } from "react-icons/fa";
+import React, { useState } from "react";
+import { FaBook, FaStackOverflow, FaReact, FaPlus } from "react-icons/fa";
 import { MdSchool } from "react-icons/md";
 import { SiCss3, SiFreecodecamp } from "react-icons/si";
 
 const UsefulLinks = () => {
-  const links = [
+  const [links, setLinks] = useState([
     {
       name: "MDN Web Docs",
       url: "https://developer.mozilla.org/",
@@ -31,7 +31,22 @@ const UsefulLinks = () => {
       url: "https://reactjs.org/docs/getting-started.html",
       icon: <FaReact />,
     },
-  ];
+  ]);
+
+  const [newLink, setNewLink] = useState({ name: "", url: "" });
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleInputChange = (e) => {
+    setNewLink({ ...newLink, [e.target.name]: e.target.value });
+  };
+
+  const handleAddLink = () => {
+    if (newLink.name && newLink.url) {
+      setLinks([...links, { ...newLink, icon: <FaBook /> }]);
+      setNewLink({ name: "", url: "" });
+      setIsAdding(false);
+    }
+  };
 
   return (
     <div>
@@ -55,7 +70,30 @@ const UsefulLinks = () => {
             {link.name}
           </a>
         ))}
+        <button onClick={() => setIsAdding(true)} style={{ fontSize: "24px" }}>
+          <FaPlus />
+        </button>
       </div>
+      {isAdding && (
+        <div>
+          <input
+            type="text"
+            name="name"
+            value={newLink.name}
+            onChange={handleInputChange}
+            placeholder="Link Name"
+          />
+          <input
+            type="text"
+            name="url"
+            value={newLink.url}
+            onChange={handleInputChange}
+            placeholder="Link URL"
+          />
+          <button onClick={handleAddLink}>Add Link</button>
+          <button onClick={() => setIsAdding(false)}>Cancel</button>
+        </div>
+      )}
     </div>
   );
 };
