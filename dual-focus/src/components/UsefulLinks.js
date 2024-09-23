@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { FaBook, FaStackOverflow, FaReact, FaPlus } from "react-icons/fa";
+import {
+  FaBook,
+  FaStackOverflow,
+  FaReact,
+  FaPlus,
+  FaTrash,
+} from "react-icons/fa";
 import { MdSchool } from "react-icons/md";
 import { SiCss3, SiFreecodecamp } from "react-icons/si";
 
@@ -40,12 +46,33 @@ const UsefulLinks = () => {
     setNewLink({ ...newLink, [e.target.name]: e.target.value });
   };
 
-  const handleAddLink = () => {
+  const handleAddLink = (e) => {
+    e.preventDefault();
+
+    // Check if both fields are filled
     if (newLink.name && newLink.url) {
-      setLinks([...links, { ...newLink, icon: <FaBook /> }]);
+      // Prepend 'http://' if the URL doesn't start with 'http://' or 'https://'
+      let formattedUrl = newLink.url;
+      if (
+        !formattedUrl.startsWith("http://") &&
+        !formattedUrl.startsWith("https://")
+      ) {
+        formattedUrl = `http://${formattedUrl}`;
+      }
+
+      setLinks([
+        ...links,
+        { name: newLink.name, url: formattedUrl, icon: <FaBook /> },
+      ]);
       setNewLink({ name: "", url: "" });
       setIsAdding(false);
+    } else {
+      alert("Please fill in both fields.");
     }
+  };
+  const removeLink = (index) => {
+    const newLinks = links.filter((_, i) => i !== index);
+    setLinks(newLinks);
   };
 
   return (
@@ -70,12 +97,10 @@ const UsefulLinks = () => {
             {link.name}
           </a>
         ))}
-        <button onClick={() => setIsAdding(true)} style={{ fontSize: "24px" }}>
-          <FaPlus />
-        </button>
       </div>
+
       {isAdding && (
-        <div>
+        <form onSubmit={handleAddLink}>
           <input
             type="text"
             name="name"
@@ -90,10 +115,14 @@ const UsefulLinks = () => {
             onChange={handleInputChange}
             placeholder="Link URL"
           />
-          <button onClick={handleAddLink}>Add Link</button>
-          <button onClick={() => setIsAdding(false)}>Cancel</button>
-        </div>
+          <button type="submit">Add Link</button>
+          <button type="button" onClick={() => setIsAdding(false)}>
+            Cancel
+          </button>
+        </form>
       )}
+
+      <button onClick={() => setIsAdding(true)}>Add New Link</button>
     </div>
   );
 };
