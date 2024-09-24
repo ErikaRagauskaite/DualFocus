@@ -1,13 +1,9 @@
 import React, { useState } from "react";
-import {
-  FaBook,
-  FaStackOverflow,
-  FaReact,
-  FaPlus,
-  FaTrash,
-} from "react-icons/fa";
+import { FaBook, FaStackOverflow, FaReact, FaPlus } from "react-icons/fa";
 import { MdSchool } from "react-icons/md";
 import { SiCss3, SiFreecodecamp } from "react-icons/si";
+import Link from "./Link";
+import AddLinkForm from "./AddLinkForm";
 
 const UsefulLinks = () => {
   const [links, setLinks] = useState([
@@ -39,91 +35,47 @@ const UsefulLinks = () => {
     },
   ]);
 
-  const [newLink, setNewLink] = useState({ name: "", url: "" });
-  const [isAdding, setIsAdding] = useState(false);
-
-  const handleInputChange = (e) => {
-    setNewLink({ ...newLink, [e.target.name]: e.target.value });
+  const addLink = (newLink) => {
+    setLinks([...links, newLink]);
   };
 
-  const handleAddLink = (e) => {
-    e.preventDefault();
-
-    // Check if both fields are filled
-    if (newLink.name && newLink.url) {
-      // Prepend 'http://' if the URL doesn't start with 'http://' or 'https://'
-      let formattedUrl = newLink.url;
-      if (
-        !formattedUrl.startsWith("http://") &&
-        !formattedUrl.startsWith("https://")
-      ) {
-        formattedUrl = `http://${formattedUrl}`;
-      }
-
-      setLinks([
-        ...links,
-        { name: newLink.name, url: formattedUrl, icon: <FaBook /> },
-      ]);
-      setNewLink({ name: "", url: "" });
-      setIsAdding(false);
-    } else {
-      alert("Please fill in both fields.");
+  const deleteLink = (index) => {
+    if (window.confirm("Are you sure you want to delete this link?")) {
+      setLinks(links.filter((_, i) => i !== index));
     }
-  };
-  const removeLink = (index) => {
-    const newLinks = links.filter((_, i) => i !== index);
-    setLinks(newLinks);
   };
 
   return (
     <div>
       <h2>Need Help?</h2>
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center" }}>
         {links.map((link, index) => (
-          <a
-            key={index}
-            href={link.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              margin: "10px",
-              fontSize: "24px",
-              color: "#007bff",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            {link.icon}
-            {link.name}
-          </a>
+          <Link key={index} link={link} onDelete={() => deleteLink(index)} />
         ))}
+        <button
+          onClick={() => {
+            const linkContainer = document.getElementById("add-link-container");
+            if (linkContainer) {
+              linkContainer.style.display = "block";
+            }
+          }}
+          style={{
+            margin: "10px",
+            fontSize: "24px",
+            color: "#007bff",
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <FaPlus />
+        </button>
       </div>
 
-      {isAdding && (
-        <form onSubmit={handleAddLink}>
-          <input
-            type="text"
-            name="name"
-            value={newLink.name}
-            onChange={handleInputChange}
-            placeholder="Link Name"
-          />
-          <input
-            type="text"
-            name="url"
-            value={newLink.url}
-            onChange={handleInputChange}
-            placeholder="Link URL"
-          />
-          <button type="submit">Add Link</button>
-          <button type="button" onClick={() => setIsAdding(false)}>
-            Cancel
-          </button>
-        </form>
-      )}
-
-      <button onClick={() => setIsAdding(true)}>Add New Link</button>
+      <div id="add-link-container" style={{ display: "none" }}>
+        <AddLinkForm onAddLink={addLink} />
+      </div>
     </div>
   );
 };
+
 export default UsefulLinks;
