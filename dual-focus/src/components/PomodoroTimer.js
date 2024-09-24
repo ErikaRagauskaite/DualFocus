@@ -1,27 +1,33 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import TimerDisplay from "./TimerDisplay";
+import PomoControls from "./PomoControls"; // Updated import
+import SettingsModal from "./SettingsModal";
 
 const PomodoroTimer = () => {
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [timeLeft, setTimeLeft] = useState(25 * 60); // Default work duration in seconds
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
+  const [workDuration, setWorkDuration] = useState(25); // Work duration in minutes
+  const [breakDuration, setBreakDuration] = useState(5); // Break duration in minutes
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     let timerId;
 
     if (isActive && timeLeft > 0) {
-      timerId = setInterval((prevTime) => {
+      timerId = setInterval(() => {
         setTimeLeft((prevTime) => prevTime - 1);
       }, 1000);
     } else if (timeLeft === 0) {
       setIsBreak(!isBreak);
-      setTimeLeft(isBreak ? 25 * 60 : 5 * 60);
+      setTimeLeft(isBreak ? workDuration * 60 : breakDuration * 60);
     }
 
     return () => clearInterval(timerId);
-  }, [isActive, timeLeft, isBreak]);
+  }, [isActive, timeLeft, isBreak, workDuration, breakDuration]);
 
   const startTimer = () => {
+    setTimeLeft(workDuration * 60); // Reset timeLeft to the work duration when starting
     setIsActive(true);
   };
 
@@ -32,29 +38,32 @@ const PomodoroTimer = () => {
   const resetTimer = () => {
     setIsActive(false);
     setIsBreak(false);
-    setTimeLeft(25 * 60);
+    setTimeLeft(workDuration * 60);
   };
 
-  const formatTime = () => {
-    const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
-    const seconds = String(timeLeft % 60).padStart(2, "0");
-    return `${minutes}:${seconds}`;
+  const toggleModal = () => {
+    setIsModalOpen((prev) => !prev);
   };
 
   return (
-    <>
-      <div>
-        <h1>{isBreak ? "Break Time!" : "Work Time!"}</h1>
-        <p>{formatTime()}</p>
-        <button onClick={startTimer} disabled={isActive}>
-          Start
-        </button>
-        <button onClick={pauseTimer} disabled={!isActive}>
-          Pause
-        </button>
-        <button onClick={resetTimer}>Reset</button>
-      </div>
-    </>
+    <div>
+      <TimerDisplay timeLeft={timeLeft} isBreak={isBreak} />
+      <PomoControls
+        startTimer={startTimer}
+        pauseTimer={pauseTimer}
+        resetTimer={resetTimer}
+        toggleModal={toggleModal}
+        isActive={isActive}
+      />
+      <SettingsModal
+        isOpen={isModalOpen}
+        workDuration={workDuration}
+        breakDuration={breakDuration}
+        setWorkDuration={setWorkDuration}
+        setBreakDuration={setBreakDuration}
+        toggleModal={toggleModal}
+      />
+    </div>
   );
 };
 
